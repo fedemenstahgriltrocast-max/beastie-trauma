@@ -3,16 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marxia Cafe - Coming Soon!</title>
+    <title>Marxia Cafe | Intelligent SMB Cafe Commerce Platform</title>
+    <meta name="description" content="Marxia Cafe delivers a secure, analytics-driven commerce stack for cafe SMBs and their customers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDKs and config will go here later -->
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Marxia Cafe!</h1>
-        <p>A dedicated platform for cafe SMBs and their customers.</p>
-        <p>We're brewing something special, stay tuned!</p>
-    </div>
-    <script src="script.js"></script>
+    <header class="site-header">
+        <div class="logo" aria-label="Marxia Cafe">
+            <span aria-hidden="true">☕</span>
+            <span>Marxia Cafe</span>
+        </div>
+        <nav aria-label="Primary navigation">
+            <button class="nav-toggle" aria-expanded="false" aria-controls="primary-navigation">Menu</button>
+            <ul id="primary-navigation" class="nav-links">
+                <li><a href="#vision">Vision</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#marketplace">Marketplace</a></li>
+                <li><a href="#compliance">Compliance</a></li>
+                <li><a href="#launch">Deploy</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </nav>
+        <a class="header-cta" href="#launch">Deploy Now</a>
+    </header>
+
+    <main>
+        <section class="hero" id="vision">
+            <div class="hero-content">
+                <p class="eyebrow">Global SMB Cafe Commerce</p>
+                <h1>Launch a compliant cafe marketplace that delights customers and protects your brand.</h1>
+                <p class="lead">Marxia Cafe fuses inventory intelligence, invoicing, analytics, and consumer ordering under one adaptive interface backed by Firebase App Hosting.</p>
+                <div class="hero-actions">
+                    <a class="cta primary" href="#experience">Explore the platform</a>
+                    <a class="cta secondary" href="#launch">View deployment flow</a>
+                </div>
+                <dl class="kpi-grid" aria-label="Key outcomes">
+                    <div>
+                        <dt>45 min</dt>
+                        <dd>Fastest delivery window with live tracking</dd>
+                    </div>
+                    <div>
+                        <dt>99.9%</dt>
+                        <dd>Uptime with Firebase Hosting &amp; CDN caching</dd>
+                    </div>
+                    <div>
+                        <dt>PCI DSS</dt>
+                        <dd>Aligned workflows &amp; secure audit logging</dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="floating-card">
+                    <h3>Live Cafe Pulse</h3>
+                    <p class="metric">+18% weekly growth</p>
+                    <ul>
+                        <li>Inventory forecast ✔︎</li>
+                        <li>Compliance status ✔︎</li>
+                        <li>Consumer NPS 4.8 ★</li>
+                    </ul>
+                </div>
+                <div class="glow"></div>
+            </div>
+        </section>
+
+        <section class="trust" aria-label="Delivery impact metrics">
+            <div>
+                <h2>Edge-ready, human-centered.</h2>
+                <p>Adaptive design tuned for Core Web Vitals, WCAG 2.1 AA, and neuro-inclusive journeys.</p>
+            </div>
+            <div class="trust-metrics">
+                <article>
+                    <h3>Inventory Intelligence</h3>
+                    <p>Automated SKU reconciliation with landed cost, tax, and margin projections.</p>
+                </article>
+                <article>
+                    <h3>AI-Orchestrated UX</h3>
+                    <p>Behavioral insights surface micro-interactions and menu personalization.</p>
+                </article>
+                <article>
+                    <h3>Cloud-native DevSecOps</h3>
+                    <p>GitHub ↔ Firebase CI/CD pipelines secured with least privilege and MFA.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="experience" id="experience" aria-labelledby="experience-title">
+            <div class="experience-header">
+                <h2 id="experience-title">Command center for SMBs &amp; consumers</h2>
+                <p>Toggle between SMB cockpit and consumer storefront to see how Marxia Cafe unifies operations.</p>
+            </div>
+            <div class="experience-tabs" role="tablist" aria-label="Platform personas">
+                <button role="tab" aria-selected="true" aria-controls="smb-panel" id="smb-tab" class="tab-button">SMB Control Center</button>
+                <button role="tab" aria-selected="false" aria-controls="consumer-panel" id="consumer-tab" class="tab-button">Consumer Ordering</button>
+            </div>
+            <div class="experience-panels">
+                <section id="smb-panel" role="tabpanel" aria-labelledby="smb-tab">
+                    <div class="panel-grid">
+                        <article class="panel" aria-label="Inventory snapshot">
+                            <header>
+                                <h3>Inventory Lifecycle</h3>
+                                <p>Auto-sync purchases, taxes, and selling price guidance.</p>
+                            </header>
+                            <table class="data-table" aria-label="Inventory positions">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Item</th>
+                                        <th scope="col">On Hand</th>
+                                        <th scope="col">Unit Cost</th>
+                                        <th scope="col">Menu Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-rows"></tbody>
+                            </table>
+                        </article>
+                        <article class="panel" aria-label="Invoice summary">
+                            <header>
+                                <h3>Smart Invoice</h3>
+                                <p>Exports to Sheets with VAT, IVA, and delivery logic.</p>
+                            </header>
+                            <div class="invoice" id="invoice-preview">
+                                <p class="invoice-number">Invoice #MC-10248</p>
+                                <ul class="invoice-items" id="invoice-items"></ul>
+                                <dl class="invoice-totals" id="invoice-totals"></dl>
+                            </div>
+                        </article>
+                        <article class="panel" aria-label="Trendline analytics">
+                            <header>
+                                <h3>Trendline Forecast</h3>
+                                <p>Freemium monthly view with upgrade path to AI automation.</p>
+                            </header>
+                            <div class="chart" aria-label="Monthly inventory vs sold units">
+                                <div class="chart-bars" id="analytics-bars"></div>
+                                <footer class="chart-legend" id="analytics-legend"></footer>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+                <section id="consumer-panel" role="tabpanel" aria-labelledby="consumer-tab" hidden>
+                    <div class="panel-grid consumer-layout">
+                        <article class="panel" aria-label="Menu preview">
+                            <header>
+                                <h3>Marxia Marketplace</h3>
+                                <p>Responsive catalog with localization-ready price display.</p>
+                            </header>
+                            <div class="product-grid" id="product-grid" role="list"></div>
+                        </article>
+                        <article class="panel" aria-label="Order flow">
+                            <header>
+                                <h3>Checkout &amp; Delivery</h3>
+                                <p>Transparent fees, taxes, and delivery windows for trust.</p>
+                            </header>
+                            <form class="order-form" id="order-form" novalidate>
+                                <label for="delivery-window">Delivery window</label>
+                                <select id="delivery-window" name="delivery-window">
+                                    <option value="45">45 minutes</option>
+                                    <option value="60">1 hour</option>
+                                    <option value="90">1 hour 30 minutes</option>
+                                </select>
+                                <fieldset>
+                                    <legend>Show delivery fee?</legend>
+                                    <label><input type="radio" name="delivery-visibility" value="show" checked> Show</label>
+                                    <label><input type="radio" name="delivery-visibility" value="hide"> Hide</label>
+                                </fieldset>
+                                <div class="order-summary" id="order-summary"></div>
+                                <button type="submit">Confirm paid order</button>
+                                <p class="order-note">Instant invoice delivered to consumer inbox with VAT/IVA breakdown.</p>
+                            </form>
+                        </article>
+                        <article class="panel" aria-label="Order tracking">
+                            <header>
+                                <h3>Live Order Timeline</h3>
+                                <p>Push notifications and QR-enabled updates across devices.</p>
+                            </header>
+                            <ol class="timeline">
+                                <li>Order confirmed · invoice emailed</li>
+                                <li>Barista prep underway</li>
+                                <li>Courier en route</li>
+                                <li>Delivered · feedback captured</li>
+                            </ol>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="marketplace" id="marketplace">
+            <div class="section-heading">
+                <h2>Global-ready cafe storefront</h2>
+                <p>Localized currency, loyalty rewards, and seasonal drops—built for SMB scale.</p>
+            </div>
+            <div class="market-stats">
+                <article>
+                    <h3>Multi-location</h3>
+                    <p>Sync menus across franchises with per-site overrides.</p>
+                </article>
+                <article>
+                    <h3>Digital wellbeing</h3>
+                    <p>Intentional color palette and motion tuned for calm ordering.</p>
+                </article>
+                <article>
+                    <h3>Tiny AI Ready</h3>
+                    <p>Integrate on-device recommendations for privacy-preserving upsell.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="compliance" id="compliance">
+            <div class="section-heading">
+                <h2>OPS CyberSec Core compliance baked in</h2>
+                <p>We map NIST CSF, CISA Cyber Essentials, and PCI DSS 4.0 into your daily workflows.</p>
+            </div>
+            <div class="compliance-grid">
+                <article>
+                    <h3>Identify</h3>
+                    <ul>
+                        <li>Asset inventory &amp; supplier risk register</li>
+                        <li>Continuous vulnerability intelligence</li>
+                        <li>Data classification for PII &amp; payment flows</li>
+                    </ul>
+                </article>
+                <article>
+                    <h3>Protect</h3>
+                    <ul>
+                        <li>MFA, least privilege, and AES-256 encryption</li>
+                        <li>Security headers, CSP, and privacy governance</li>
+                        <li>Automated patching with GitHub Actions</li>
+                    </ul>
+                </article>
+                <article>
+                    <h3>Detect</h3>
+                    <ul>
+                        <li>SIEM-ready audit logging &amp; anomaly baselines</li>
+                        <li>Real-time Core Web Vitals telemetry</li>
+                        <li>Pen-test &amp; incident drill automation</li>
+                    </ul>
+                </article>
+                <article>
+                    <h3>Respond &amp; Recover</h3>
+                    <ul>
+                        <li>Documented IR plan with communication templates</li>
+                        <li>Forensic exports &amp; encrypted evidence handling</li>
+                        <li>Continuity dashboards with MTTR/MTTD goals</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="launch" id="launch">
+            <div class="launch-content">
+                <div class="launch-text">
+                    <h2>Deploy with Firebase App Hosting</h2>
+                    <p>Go live in minutes using secure, repeatable DevSecOps workflows. Automate pushes with GitHub Actions and monitor with Firebase analytics.</p>
+                    <ol class="checklist">
+                        <li><code>npm install firebase</code></li>
+                        <li><code>npm install -g firebase-tools</code></li>
+                        <li><code>firebase login</code></li>
+                        <li><code>firebase init</code> → choose Hosting &amp; configure CI</li>
+                        <li><code>firebase deploy</code></li>
+                    </ol>
+                </div>
+                <form class="waitlist" aria-labelledby="waitlist-title">
+                    <h3 id="waitlist-title">Join the Marxia Cafe rollout</h3>
+                    <p>Receive onboarding, compliance templates, and AI optimization playbooks.</p>
+                    <label for="email">Work email</label>
+                    <input type="email" id="email" name="email" placeholder="you@cafe.com" required>
+                    <label for="company">Cafe or group name</label>
+                    <input type="text" id="company" name="company" placeholder="Roastery Collective" required>
+                    <button type="submit">Request early access</button>
+                    <p class="privacy">GDPR/CCPA compliant. Opt-out anytime.</p>
+                </form>
+            </div>
+        </section>
+
+        <section class="faq" id="faq">
+            <div class="section-heading">
+                <h2>Answers for cafe innovators</h2>
+                <p>Everything you need to operate resilient, human-centered cafe commerce.</p>
+            </div>
+            <div class="faq-grid">
+                <details>
+                    <summary>How do SMBs manage inventory and pricing?</summary>
+                    <p>Use the control center to upload purchases, taxes, and supplier costs. Marxia auto-suggests menu pricing to maintain target margins.</p>
+                </details>
+                <details>
+                    <summary>Can I hide delivery charges from consumers?</summary>
+                    <p>Yes. Toggle delivery fee visibility per order or per store. Consumers still receive a transparent invoice that meets fiscal requirements.</p>
+                </details>
+                <details>
+                    <summary>What analytics are available in freemium vs premium?</summary>
+                    <p>Freemium delivers monthly trendlines and anomaly alerts. Premium unlocks day-to-year granularity, predictive waste insights, and AI-crafted recommendations.</p>
+                </details>
+                <details>
+                    <summary>How is security enforced?</summary>
+                    <p>We enforce PCI DSS 4.0 controls, security headers, MFA, encrypted secrets, and integrate with SIEM providers for centralized visibility.</p>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <p>© <span id="year"></span> Marxia Cafe. Secure · Compliant · Human-centered.</p>
+            <p>Crafted with Firebase Hosting, Tiny AI orchestration, and OPS CyberSec Core.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#vision">Vision</a>
+            <a href="#marketplace">Marketplace</a>
+            <a href="#launch">Deploy</a>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>

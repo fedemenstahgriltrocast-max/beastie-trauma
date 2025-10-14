@@ -1,1 +1,497 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Marxia Café — OPS Edge Commerce</title>
 
+  <!-- Optional CSP if you serve this as HTML (headers beat meta in real prod) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'">
+
+  <style>
+    :root{
+      --bg:#0b1020; --card:#11162a; --ink:#e8eef6; --muted:#a9b3c3; --line:#2b2f40;
+      --cta:#22c3a6; --cta2:#7aa8ff; --accent:#ff8ab3; --focus:#c466ff;
+      --radius:16px; --pad:1rem; --gap:1rem;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer}
+
+    /* Layout */
+    header{position:sticky;top:0;background:linear-gradient(180deg,#0b1020cc,#0b102000);backdrop-filter:saturate(130%) blur(6px);z-index:10}
+    .wrap{max-width:1100px;margin:auto;padding:1rem}
+    nav{display:flex;align-items:center;gap:.75rem;justify-content:space-between}
+    .brand{font-weight:900;letter-spacing:.3px}
+    .navlinks a{opacity:.9;padding:.5rem .75rem;border:1px solid transparent;border-radius:10px}
+    .navlinks a.active{border-color:var(--line);background:#0f1530}
+
+    main{padding:2rem 1rem}
+    section.page{display:none}
+    section.page.active{display:block}
+
+    /* Cards & buttons */
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(1rem,2vw,1.5rem)}
+    .btn{border:1px solid var(--line);background:#141a33;color:var(--ink);padding:.8rem 1rem;border-radius:12px}
+    .btn.cta{background:linear-gradient(135deg,var(--cta),var(--cta2));border:none;color:#08121a;font-weight:800}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:.5rem .7rem;border-radius:10px}
+    .btn:focus{outline:2px solid var(--focus);outline-offset:2px}
+
+    /* Landing (HCI 2025/26 vibe) */
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center}
+    .hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.2rem 0}
+    .hero p{color:var(--muted)}
+    .pill{display:inline-flex;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;color:var(--muted);font-size:.9rem}
+    .showcase{aspect-ratio:4/3;border-radius:18px;background:
+      radial-gradient(120% 120% at 10% 10%, #1b2344, transparent 60%),
+      radial-gradient(100% 150% at 90% 20%, #1a2a3d, transparent 60%),
+      linear-gradient(135deg,#0f1530,#0b1020);
+      border:1px solid var(--line);
+      display:grid;place-items:center}
+    .showcase .cup{width:min(60%,280px);height:auto}
+
+    /* Router sections */
+    .grid{display:grid;gap:1rem}
+    .shopLayout{display:grid;grid-template-columns:1.2fr .8fr;gap:1.2rem}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.shopLayout{grid-template-columns:1fr}}
+
+    /* Carousel */
+    .carousel{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--line)}
+    .track{display:flex;transition:transform .35s ease;will-change:transform}
+    .slide{min-width:100%;display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center;padding:1rem}
+    @media (max-width:700px){.slide{grid-template-columns:1fr}}
+    .slide .visual{display:grid;place-items:center}
+    .slide .visual .mock{width:min(350px,75%);aspect-ratio:1/1;border-radius:16px;background:
+      conic-gradient(from 0deg at 50% 50%, #20305e, #19233f, #1b2b59, #20305e);
+      border:1px solid var(--line);display:grid;place-items:center;color:#cfd7ff}
+    .slide .meta h3{margin:.2rem 0 0 0}
+    .price{font-weight:900;font-size:1.2rem}
+    .qtyRow{display:flex;align-items:center;gap:.6rem;margin-top:.6rem}
+    .qtyBtn{width:2.1rem;height:2.1rem;font-size:1.3rem;line-height:1;background:#151b34;border:1px solid var(--line);border-radius:10px}
+    .arrow{position:absolute;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:#10162c;border-radius:50%;width:2.4rem;height:2.4rem;display:grid;place-items:center;opacity:.9}
+    .arrow.left{left:.6rem}.arrow.right{right:.6rem}
+
+    /* Cart */
+    .cart{position:sticky;top:5.5rem}
+    .cart h3{margin:.2rem 0 1rem 0}
+    .cart .line{display:flex;align-items:center;justify-content:space-between;padding:.35rem 0;border-bottom:1px dashed #233}
+    .cart .line:last-child{border-bottom:none}
+    .totals{margin-top:1rem;border-top:1px solid var(--line);padding-top:.8rem}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:.4rem 0}
+    .muted{color:var(--muted)}
+    .lock{border:1px solid var(--line);background:#141a33;border-radius:10px;padding:.15rem .45rem;cursor:pointer}
+
+    /* Forms */
+    label{font-size:.95rem;color:var(--muted)}
+    input[type="text"],input[type="number"],input[type="password"],input[type="email"],textarea{
+      width:100%;padding:.7rem;border-radius:12px;border:1px solid var(--line);background:#0e1430;color:var(--ink)
+    }
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+
+    /* Admin */
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line)}
+    th,td{border-bottom:1px solid var(--line);text-align:left;padding:.6rem}
+    th{color:#cbd3e6;font-weight:700;background:#0f1530}
+    .badge{display:inline-block;padding:.15rem .45rem;border:1px solid var(--line);border-radius:999px;font-size:.8rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">Marxia Café • OPS</div>
+        <div class="navlinks">
+          <a href="#/landing" id="nav-landing" class="active">Home</a>
+          <a href="#/shop" id="nav-shop">Shop</a>
+          <a href="#/login" id="nav-login">Login</a>
+          <a href="#/admin" id="nav-admin">Admin</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Landing -->
+    <section class="page active" id="landing">
+      <div class="hero card">
+        <div>
+          <span class="pill">HCI 2025/26 • Human-Centered Ordering</span>
+          <h1>Welcome - Marxia Café is located near you</h1>
+          <p>Our warmhearted tortillas de Verde and our Coffee will be your daily delight.</p>
+          <p>You can order online; you can also visit us - we love to share and get to know you more.</p>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+            <!-- In production, change href to your Worker path (e.g. https://worker.workers.dev/shop) -->
+            <a class="btn cta" href="#/shop">Order Now</a>
+          </div>
+        </div>
+        <div class="showcase">
+          <!-- Simple inline SVG “cup” -->
+          <svg class="cup" viewBox="0 0 200 200" role="img" aria-label="Coffee cup">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22c3a6"/><stop offset="1" stop-color="#7aa8ff"/>
+              </linearGradient>
+            </defs>
+            <rect x="50" y="60" width="100" height="90" rx="16" fill="url(#g)" stroke="#2b2f40"/>
+            <rect x="140" y="75" width="20" height="40" rx="10" fill="#10162c" stroke="#2b2f40"/>
+            <rect x="70" y="45" width="60" height="8" rx="4" fill="#c466ff"/>
+            <circle cx="100" cy="105" r="18" fill="#0b1020" opacity=".25"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shop -->
+    <section class="page" id="shop">
+      <div class="shopLayout">
+        <div class="card">
+          <div class="carousel" aria-roledescription="carousel">
+            <button class="arrow left" id="arrowLeft" aria-label="Previous">‹</button>
+            <div class="track" id="track"><!-- slides injected --></div>
+            <button class="arrow right" id="arrowRight" aria-label="Next">›</button>
+          </div>
+          <div style="margin-top:.7rem;display:flex;justify-content:center;gap:.4rem;color:var(--muted)">
+            <span id="dotbar"><!-- dots injected --></span>
+          </div>
+        </div>
+
+        <aside class="cart card">
+          <h3>Cart</h3>
+          <div id="cartLines"><!-- items injected --></div>
+
+          <div class="totals">
+            <div class="row"><span class="muted">Subtotal</span><strong id="subtotal">$0.00</strong></div>
+
+            <div class="row" style="align-items:center">
+              <span class="muted">VAT/IVA
+                <button id="vatLock" class="lock" aria-pressed="true" title="Unlock to edit">🔒</button>
+              </span>
+              <div class="two" style="align-items:center">
+                <input id="vatRate" type="number" step="0.01" min="0" value="0.12" disabled />
+                <strong id="vatAmt">$0.00</strong>
+              </div>
+            </div>
+
+            <div class="row" style="align-items:center">
+              <span class="muted">Delivery Fee</span>
+              <div class="two" style="align-items:center">
+                <input id="deliveryFee" type="number" step="0.01" min="0" value="0" />
+                <strong id="deliveryAmt">$0.00</strong>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:.4rem"><span class="muted">Total</span><strong id="total">$0.00</strong></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--line);margin:1rem 0">
+
+          <div class="grid">
+            <label><input type="checkbox" id="locConsent"> I consent to share my location to calculate delivery.</label>
+            <div class="two">
+              <input type="text" id="address" placeholder="Delivery address (street, number, references)" />
+              <input type="text" id="apt" placeholder="Apt/Unit/Additional info (optional)" />
+            </div>
+            <div class="row">
+              <span class="muted" id="geoStatus">GPS: not requested</span>
+              <button class="btn small" id="getLocation">Get GPS</button>
+            </div>
+            <button class="btn cta" id="checkoutBtn">Checkout → DataFast Link</button>
+            <small class="muted">On click, your order (items + totals + address + GPS if authorized) is sent to the edge Worker. The Worker will forward minimal required fields to DataFast Link.</small>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Login -->
+    <section class="page" id="login">
+      <div class="card grid">
+        <h2>Sign in</h2>
+        <div class="two">
+          <div class="card">
+            <h3>End Consumer</h3>
+            <div class="grid">
+              <label>Email <input type="email" id="cEmail" placeholder="you@example.com"></label>
+              <label>Password <input type="password" id="cPass" placeholder="••••••••"></label>
+              <button class="btn" id="cLogin">Login</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Admin (Business Owner)</h3>
+            <div class="grid">
+              <label>Username <input type="text" id="aUser" placeholder="owner"></label>
+              <label>Password <input type="password" id="aPass" placeholder="••••••••"></label>
+              <button class="btn" id="aLogin">Login</button>
+              <small class="muted">This demo doesn’t implement real auth. Wire this form to the Worker for secure verification.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin -->
+    <section class="page" id="admin">
+      <div class="card grid">
+        <h2>Admin Dashboard</h2>
+        <div class="row"><span class="muted">Orders</span><span class="badge">from Worker</span></div>
+        <div class="card">
+          <table>
+            <thead><tr><th>#</th><th>When</th><th>Buyer</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody id="orders"><tr><td colspan="5" class="muted">Connect to your Worker endpoint to list recent orders.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    // ===== Router (hash) =====
+    const pages = ["landing","shop","login","admin"];
+    const $ = (q,root=document)=>root.querySelector(q);
+    const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
+    function route(){
+      const r = location.hash.replace("#/","") || "landing";
+      pages.forEach(id => {
+        $("#"+id).classList.toggle("active", id===r);
+        $("#nav-"+id)?.classList.toggle("active", id===r);
+      });
+    }
+    addEventListener("hashchange", route);
+    route();
+
+    // ===== Demo data =====
+    /** @type {{id:string,name:string,price:number,desc:string,color:string}[]} */
+    const products = [
+      {id:"TORT01", name:"Tortilla de Maíz", price: 1.50, desc:"Hecha al momento, 100% maíz", color:"#203760"},
+      {id:"CAF01",  name:"Café Americano",   price: 2.20, desc:"Grano local, tostado medio", color:"#2a405f"},
+      {id:"CAF02",  name:"Café Latte",       price: 2.80, desc:"Espresso + leche vaporizada", color:"#283458"},
+      {id:"EMP01",  name:"Empanada de Queso",price: 2.40, desc:"Crujiente, queso derretido", color:"#223050"},
+      {id:"JUG01",  name:"Jugo de Naranja",  price: 2.10, desc:"Natural, sin azúcar añadida", color:"#1e2b48"},
+    ];
+
+    // ===== State =====
+    const state = {
+      slide: 0,
+      cart: /** @type {Map<string,{id:string,name:string,price:number,qty:number}>} */(new Map()),
+      vatLocked: true,
+      vatRate: 0.12,
+      deliveryFee: 0,
+      gps: /** @type {null | {lat:number,lon:number,accuracy?:number}} */ (null),
+      address: "",
+      apt: ""
+    };
+
+    // ===== Money utils =====
+    const fmt = (n)=>"$"+n.toFixed(2);
+    function computeTotals(){
+      let subtotal = 0;
+      for (const {price,qty} of state.cart.values()) subtotal += price*qty;
+      const vat = subtotal * state.vatRate;
+      const delivery = Number.isFinite(state.deliveryFee) ? state.deliveryFee : 0;
+      const total = subtotal + vat + delivery;
+      return {subtotal,vat,delivery,total};
+    }
+
+    // ===== Carousel render =====
+    const track = $("#track");
+    const dotbar = $("#dotbar");
+    function renderSlides(){
+      track.innerHTML = "";
+      dotbar.innerHTML = "";
+      for(const p of products){
+        const slide = document.createElement("div");
+        slide.className = "slide";
+        slide.innerHTML = `
+          <div class="visual">
+            <div class="mock" style="background:linear-gradient(135deg,${p.color},#0f1530)">
+              <span>${p.name}</span>
+            </div>
+          </div>
+          <div class="meta">
+            <h3>${p.name}</h3>
+            <div class="muted">${p.desc}</div>
+            <div class="price" aria-label="Price">${fmt(p.price)}</div>
+            <div class="qtyRow">
+              <button class="qtyBtn" data-act="dec" data-id="${p.id}" aria-label="Remove">−</button>
+              <button class="qtyBtn" data-act="inc" data-id="${p.id}" aria-label="Add">+</button>
+              <button class="btn small" data-act="inc" data-id="${p.id}">+ Add</button>
+              <button class="btn small" data-act="dec" data-id="${p.id}">− Remove</button>
+            </div>
+          </div>
+        `;
+        track.appendChild(slide);
+
+        const dot = document.createElement("button");
+        dot.className = "btn small";
+        dot.textContent = "•";
+        dot.addEventListener("click",()=>goToSlide(products.indexOf(p)));
+        dotbar.appendChild(dot);
+      }
+      updateTrack();
+    }
+    function goToSlide(i){
+      state.slide = Math.max(0, Math.min(products.length-1, i));
+      updateTrack();
+    }
+    function updateTrack(){
+      track.style.transform = `translateX(-${state.slide*100}%)`;
+      // focus current dot visually (optional)
+      [...dotbar.children].forEach((d,idx)=>d.style.opacity = (idx===state.slide? "1":"0.6"));
+    }
+    $("#arrowLeft").addEventListener("click", ()=>goToSlide(state.slide-1));
+    $("#arrowRight").addEventListener("click", ()=>goToSlide(state.slide+1));
+    renderSlides();
+
+    // Slide button events
+    track.addEventListener("click", (e)=>{
+      const b = /** @type {HTMLElement} */(e.target);
+      if (b?.dataset?.act && b?.dataset?.id){
+        const p = products.find(x=>x.id===b.dataset.id);
+        if(!p) return;
+        if (b.dataset.act==="inc") addToCart(p);
+        if (b.dataset.act==="dec") removeFromCart(p.id);
+      }
+    });
+
+    // ===== Cart render =====
+    const cartLines = $("#cartLines");
+    const subtotalEl = $("#subtotal");
+    const vatAmtEl = $("#vatAmt");
+    const deliveryAmtEl = $("#deliveryAmt");
+    const totalEl = $("#total");
+    function renderCart(){
+      cartLines.innerHTML = "";
+      if (state.cart.size===0){
+        const line = document.createElement("div");
+        line.className = "line muted";
+        line.textContent = "Cart is empty.";
+        cartLines.appendChild(line);
+      } else {
+        for(const item of state.cart.values()){
+          const line = document.createElement("div");
+          line.className = "line";
+          line.innerHTML = `
+            <span>${item.name} × ${item.qty}</span>
+            <span>${fmt(item.price*item.qty)}</span>
+          `;
+          cartLines.appendChild(line);
+        }
+      }
+      const t = computeTotals();
+      subtotalEl.textContent = fmt(t.subtotal);
+      vatAmtEl.textContent = fmt(t.vat);
+      deliveryAmtEl.textContent = fmt(t.delivery);
+      totalEl.textContent = fmt(t.total);
+    }
+    function addToCart(p){
+      const curr = state.cart.get(p.id);
+      if (curr) curr.qty += 1; else state.cart.set(p.id, {id:p.id,name:p.name,price:p.price,qty:1});
+      renderCart();
+    }
+    function removeFromCart(id){
+      const curr = state.cart.get(id);
+      if(!curr) return;
+      curr.qty -= 1;
+      if (curr.qty<=0) state.cart.delete(id);
+      renderCart();
+    }
+    renderCart();
+
+    // VAT lock/unlock
+    const vatRate = /** @type {HTMLInputElement} */ ($("#vatRate"));
+    const vatLock = $("#vatLock");
+    vatLock.addEventListener("click", ()=>{
+      state.vatLocked = !state.vatLocked;
+      vatRate.disabled = state.vatLocked;
+      vatLock.textContent = state.vatLocked ? "🔒" : "🔓";
+      vatLock.setAttribute("aria-pressed", String(!state.vatLocked));
+    });
+    vatRate.addEventListener("input", ()=>{
+      const v = parseFloat(vatRate.value||"0");
+      state.vatRate = Number.isFinite(v)? v: 0;
+      renderCart();
+    });
+
+    // Delivery fee
+    const deliveryFee = /** @type {HTMLInputElement} */ ($("#deliveryFee"));
+    deliveryFee.addEventListener("input", ()=>{
+      const v = parseFloat(deliveryFee.value||"0");
+      state.deliveryFee = Number.isFinite(v)? v: 0;
+      renderCart();
+    });
+
+    // Address & GPS
+    const address = /** @type {HTMLInputElement} */ ($("#address"));
+    const apt = /** @type {HTMLInputElement} */ ($("#apt"));
+    address.addEventListener("input", ()=>state.address = address.value.trim());
+    apt.addEventListener("input", ()=>state.apt = apt.value.trim());
+    const geoStatus = $("#geoStatus");
+    const locConsent = /** @type {HTMLInputElement} */ ($("#locConsent"));
+    $("#getLocation").addEventListener("click", ()=>{
+      if (!locConsent.checked){ alert("Please check the consent box to share your location."); return; }
+      if (!navigator.geolocation){ geoStatus.textContent = "GPS: not supported"; return; }
+      geoStatus.textContent = "GPS: requesting…";
+      navigator.geolocation.getCurrentPosition(
+        pos=>{
+          state.gps = {lat: pos.coords.latitude, lon: pos.coords.longitude, accuracy: pos.coords.accuracy};
+          geoStatus.textContent = `GPS: ${state.gps.lat.toFixed(5)}, ${state.gps.lon.toFixed(5)} (±${Math.round(state.gps.accuracy||0)}m)`;
+        },
+        err=>{
+          state.gps = null;
+          geoStatus.textContent = "GPS: denied or unavailable";
+          console.warn(err);
+        },
+        {enableHighAccuracy:true,timeout:10000,maximumAge:0}
+      );
+    });
+
+    // Checkout → Worker → DataFast Link
+    $("#checkoutBtn").addEventListener("click", async ()=>{
+      if (state.cart.size===0){ alert("Your cart is empty."); return; }
+      if (!state.address){ alert("Please provide a delivery address."); return; }
+
+      const items = [...state.cart.values()].map(x=>({id:x.id,name:x.name,qty:x.qty,unitPrice:x.price,amount:(x.price*x.qty)}));
+      const t = computeTotals();
+      const order = {
+        id: crypto.getRandomValues(new Uint32Array(1))[0].toString(16),
+        at: new Date().toISOString(),
+        items, totals: t,
+        vatRate: state.vatRate,
+        deliveryFee: state.deliveryFee,
+        address: {line1: state.address, line2: state.apt||"", gps: state.gps},
+        channel: "web",
+        currency: "USD" /* adjust if needed */
+      };
+
+      try{
+        const res = await fetch("/api/order", {
+          method: "POST",
+          headers: {"content-type":"application/json"},
+          body: JSON.stringify(order)
+        });
+        const data = await res.json().catch(()=>({}));
+        // Worker should respond with { ok:true, redirect:"<datafast link>" } or similar
+        if (data?.ok && data?.redirect){
+          location.href = data.redirect; // DataFast payment link
+        } else {
+          alert("Order submitted to Worker. (Mock) Response:\n"+JSON.stringify(data,null,2));
+        }
+      }catch(e){
+        console.error(e);
+        alert("Could not reach the Worker. Please try again.");
+      }
+    });
+
+    // Demo: quick keyboard navigation for carousel
+    addEventListener("keydown",(e)=>{
+      if (location.hash.startsWith("#/shop")){
+        if (e.key==="ArrowLeft") goToSlide(state.slide-1);
+        if (e.key==="ArrowRight") goToSlide(state.slide+1);
+      }
+    });
+  </script>
+</body>
+</html>

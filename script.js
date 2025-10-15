@@ -212,6 +212,84 @@ const renderOrderSummary = (options = { showDelivery: true, window: 45 }) => {
   `;
 };
 
+const THEME_STORAGE_KEY = "marxia-cafe-theme";
+const themeToggle = document.getElementById("theme-toggle");
+
+const setTheme = (theme, { persist = true } = {}) => {
+  const isLight = theme === "light";
+  document.body.classList.toggle("theme-light", isLight);
+  document.body.classList.toggle("theme-dark", !isLight);
+
+  if (themeToggle) {
+    themeToggle.textContent = isLight ? "Dark" : "Light";
+    themeToggle.setAttribute(
+      "aria-label",
+      isLight ? "Switch to dark theme" : "Switch to light theme"
+    );
+    themeToggle.setAttribute("aria-pressed", String(isLight));
+  }
+
+  if (!persist) {
+    return;
+  }
+
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    console.warn("Unable to persist theme preference", error);
+  }
+};
+
+const getStoredTheme = () => {
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === "light" || stored === "dark") {
+      return stored;
+    }
+  } catch (error) {
+    console.warn("Unable to read stored theme preference", error);
+  }
+  return null;
+};
+
+const applyPreferredTheme = () => {
+  const storedTheme = getStoredTheme();
+  if (storedTheme) {
+    setTheme(storedTheme);
+    return;
+  }
+
+  const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)")?.matches;
+  setTheme(prefersLight ? "light" : "dark", { persist: false });
+};
+
+applyPreferredTheme();
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const nextTheme = document.body.classList.contains("theme-light")
+      ? "dark"
+      : "light";
+    setTheme(nextTheme);
+  });
+
+  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: light)");
+  if (mediaQuery) {
+    const handleMediaChange = (event) => {
+      if (getStoredTheme()) {
+        return;
+      }
+      setTheme(event.matches ? "light" : "dark", { persist: false });
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleMediaChange);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleMediaChange);
+    }
+  }
+}
+
 const navToggle = document.querySelector(".nav-toggle");
 const navLinks = document.querySelector(".nav-links");
 
